@@ -72,7 +72,6 @@ let bindings (): Binding<Model, Msg> list = [
     "DockCloseCmd" |> Binding.cmdParam (fun p m -> PanesClosed (convertDockCloseArgs p))
     "DockedModels" |> Binding.subModelSeq ((fun (m: Model) -> m.DockedModels), snd, (fun (m: ChartPage.Model) -> m.Id), (ChartPageMsg), ChartPage.bindings)
     "AddDockedModel" |> Binding.cmd AddDockedModel
-    "RegenDockedModels" |> Binding.cmd RegenDockedModels
 ]
 
 [<EntryPoint; STAThread>]
