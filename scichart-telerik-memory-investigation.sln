@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ElmishCode", "ElmishCode\ElmishCode.fsproj", "{050FDF9C-46DD-45C5-901C-85E4441E1BCD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Views", "Views\Views.csproj", "{87DA7473-A295-487F-AB7C-A13FEBBB16C5}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Views.Common", "Views.Common\Views.Common.fsproj", "{A50589EE-AC83-4297-B439-1F6E699AC883}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{050FDF9C-46DD-45C5-901C-85E4441E1BCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{050FDF9C-46DD-45C5-901C-85E4441E1BCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{050FDF9C-46DD-45C5-901C-85E4441E1BCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{050FDF9C-46DD-45C5-901C-85E4441E1BCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87DA7473-A295-487F-AB7C-A13FEBBB16C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87DA7473-A295-487F-AB7C-A13FEBBB16C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87DA7473-A295-487F-AB7C-A13FEBBB16C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87DA7473-A295-487F-AB7C-A13FEBBB16C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A50589EE-AC83-4297-B439-1F6E699AC883}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A50589EE-AC83-4297-B439-1F6E699AC883}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A50589EE-AC83-4297-B439-1F6E699AC883}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A50589EE-AC83-4297-B439-1F6E699AC883}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2D9A532F-24E3-42EB-95B6-FD47981EBF31}
+	EndGlobalSection
+EndGlobal

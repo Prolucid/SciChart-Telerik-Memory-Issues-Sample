@@ -1,0 +1,12 @@
+.idea
+.bundle
+.vs
+.vscode
+packages
+paket-files
+bin
+obj
+.DS_Store
+vendor
+
+*.user

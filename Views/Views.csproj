@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0-windows7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SciChart" Version="8.5.0.28148" />
+    <PackageReference Include="SciChart3D" Version="8.5.0.28148" />
+    <PackageReference Include="Telerik.UI.for.Wpf.60" Version="2024.1.408" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Views.Common\Views.Common.fsproj" />
+  </ItemGroup>
+
+</Project>

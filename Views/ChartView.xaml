@@ -1,0 +1,56 @@
+﻿<UserControl x:Class="Views.ChartView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:s="http://schemas.abtsoftware.co.uk/scichart"
+        xmlns:local="clr-namespace:Views"
+        xmlns:common="clr-namespace:Views.Common;assembly=Views.Common"
+        mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <s:DefaultViewportManager x:Key="defaultViewportManager"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <s:SciChartSurface Grid.Row="0" 
+                Name="heatmap" 
+                ViewportManager="{StaticResource defaultViewportManager}"
+                EnableMultiThreadedRendering="True" 
+                RenderPriority="Normal"
+                s:VisualXcceleratorEngine.IsEnabled="True"
+                s:VisualXcceleratorEngine.FallbackType="{x:Type s:XamlRenderSurface}"
+                s:VisualXcceleratorEngine.DowngradeWithoutException="False"
+                s:VisualXcceleratorEngine.EnableImpossibleMode="True"
+                s:SciChartGroup.VerticalChartGroup="chartSync">
+
+            <s:SciChartSurface.RenderableSeries>
+                <s:FastUniformHeatmapRenderableSeries
+                    DataSeries="{Binding GraphData}"
+                    Opacity="1.0" >
+
+                </s:FastUniformHeatmapRenderableSeries>
+            </s:SciChartSurface.RenderableSeries>
+
+            <s:SciChartSurface.XAxis>
+                <s:NumericAxis x:Name="timeAxis" GrowBy="0.1,0.1" AutoRange="Always" AxisTitle="Time (μs)"/>
+            </s:SciChartSurface.XAxis>
+
+            <s:SciChartSurface.YAxis>
+                <s:NumericAxis x:Name="rotaryAxis" GrowBy="0.1,0.1" AutoRange="Always" AxisTitle="Rotary (deg)" FlipCoordinates="False"/>
+            </s:SciChartSurface.YAxis>
+
+        </s:SciChartSurface>
+        <StackPanel Orientation="Horizontal" Grid.Row="1">
+            <Button Command="{Binding ShowNextFrame}" IsEnabled="{Binding IsNextFrameLoaded}">
+                Display Next Frame
+            </Button>
+            <TextBlock Text="Displaying frame: "/>
+            <TextBlock Text="{Binding CurrentFrame}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>
