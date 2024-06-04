@@ -4,26 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:s="http://schemas.abtsoftware.co.uk/scichart"
-        xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
         xmlns:local="clr-namespace:Views"
         mc:Ignorable="d"
-        xmlns:common="clr-namespace:Views.Common;assembly=Views.Common"
         Title="MainWindow" Height="450" Width="800">
     <Window.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Telerik.Windows.Themes.VisualStudio2013;component/Themes/System.Windows.xaml" />
-                <ResourceDictionary Source="/Telerik.Windows.Themes.VisualStudio2013;component/Themes/Telerik.Windows.Controls.xaml" />
-                <ResourceDictionary Source="/Telerik.Windows.Themes.VisualStudio2013;component/Themes/Telerik.Windows.Controls.Input.xaml" />
-                <ResourceDictionary Source="/Telerik.Windows.Themes.VisualStudio2013;component/Themes/Telerik.Windows.Controls.Navigation.xaml" />
-                <ResourceDictionary Source="/Telerik.Windows.Themes.VisualStudio2013;component/Themes/Telerik.Windows.Controls.Data.xaml" />
-                <ResourceDictionary Source="/Telerik.Windows.Themes.VisualStudio2013;component/Themes/Telerik.Windows.Controls.Docking.xaml" />
-                <ResourceDictionary Source="/Telerik.Windows.Themes.VisualStudio2013;component/Themes/Telerik.Windows.Controls.GridView.xaml" />
-                <ResourceDictionary Source="/Telerik.Windows.Themes.VisualStudio2013;component/Themes/Telerik.Windows.Controls.VirtualGrid.xaml" />
-                <ResourceDictionary Source="/Telerik.Windows.Themes.VisualStudio2013;component/Themes/Telerik.Windows.Controls.VirtualGrid.xaml" />
-                <ResourceDictionary Source="/Telerik.Windows.Themes.VisualStudio2013;component/Themes/Telerik.Windows.Controls.FixedDocumentViewers.xaml" />
-                <ResourceDictionary Source="/Telerik.Windows.Themes.VisualStudio2013;component/Themes/Telerik.Windows.Controls.FixedDocumentViewersUI.xaml" />
-            </ResourceDictionary.MergedDictionaries>
+            <DataTemplate x:Key="GraphUserControl">
+                <local:ChartView/>
+            </DataTemplate>
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
@@ -31,24 +19,14 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <telerik:RadDocking
-            Grid.Row="0"
-            PanesSource="{Binding DockedModels}"
-            CloseButtonPosition="InPaneAndGroup"
-            RetainPaneSizeMode="DockingAndFloating"
-            telerik:DragDropGroup.Name="MainGroup"
-            x:Name="MainDocking">
-                <telerik:EventToCommandBehavior.EventBindings>
-                    <telerik:EventBinding Command="{Binding DockCloseCmd}" EventName="Close" PassEventArgsToCommand="True"/>
-                </telerik:EventToCommandBehavior.EventBindings>
-                <telerik:RadDocking.DockingPanesFactory>
-                    <local:CustomDockingFactory />
-                </telerik:RadDocking.DockingPanesFactory>
-                <telerik:RadSplitContainer MaxWidth="600" InitialPosition="DockedLeft">
-                    <telerik:RadPaneGroup Name="leftGroup" telerik:RadDocking.SerializationTag="leftGroup" AllowDragOverTab="True" AllowDrop="True">
-                    </telerik:RadPaneGroup>
-                </telerik:RadSplitContainer>
-        </telerik:RadDocking>
+        <TabControl ItemsSource="{Binding DockedModels}"
+                    ContentTemplate="{StaticResource GraphUserControl}">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="Window"/>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+        </TabControl>
         <StackPanel Orientation="Horizontal" Grid.Row="1">
             <Button Command="{Binding AddDockedModel}">
                 Add Graph Window

@@ -7,8 +7,6 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "ElmishCode", "ElmishCode\El
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Views", "Views\Views.csproj", "{87DA7473-A295-487F-AB7C-A13FEBBB16C5}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Views.Common", "Views.Common\Views.Common.fsproj", "{A50589EE-AC83-4297-B439-1F6E699AC883}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{87DA7473-A295-487F-AB7C-A13FEBBB16C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87DA7473-A295-487F-AB7C-A13FEBBB16C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87DA7473-A295-487F-AB7C-A13FEBBB16C5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A50589EE-AC83-4297-B439-1F6E699AC883}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A50589EE-AC83-4297-B439-1F6E699AC883}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A50589EE-AC83-4297-B439-1F6E699AC883}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A50589EE-AC83-4297-B439-1F6E699AC883}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

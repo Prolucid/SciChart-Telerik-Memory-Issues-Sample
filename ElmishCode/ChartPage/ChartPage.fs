@@ -67,6 +67,7 @@ let update (msg: Msg) (model: Model) : Model*Cmd<Msg> =
     | Close ->
         model.GraphData 
         |> Array.iter (fun g -> 
+                        g.Clear()
                         if (not(isNull(g.ParentSurface))) then
                             g.ParentSurface.Dispose())
         { model with GraphData = [||]}, RemoveDockedModel |> Cmd.ofMsg
@@ -75,9 +76,9 @@ let update (msg: Msg) (model: Model) : Model*Cmd<Msg> =
         model, Cmd.none
 
 let bindings (): Binding<Model, Msg> list = [
-    "DockedId" |> Binding.oneWay (fun m -> m.Id)
     "GraphData" |> Binding.oneWayOpt (fun m -> m.GraphData |> Array.tryItem m.DisplayIndex)
     "ShowNextFrame" |> Binding.cmd ShowNextFrame
     "IsNextFrameLoaded" |> Binding.oneWay (fun m -> m.IsNextFrameLoaded)
     "CurrentFrame" |> Binding.oneWay (fun m -> m.DisplayIndex)
+    "ClosePage" |> Binding.cmd Close
     ]

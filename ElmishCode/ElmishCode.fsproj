@@ -18,7 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Views.Common\Views.Common.fsproj" />
     <ProjectReference Include="..\Views\Views.csproj" />
   </ItemGroup>
 

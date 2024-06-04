@@ -5,7 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:s="http://schemas.abtsoftware.co.uk/scichart"
         xmlns:local="clr-namespace:Views"
-        xmlns:common="clr-namespace:Views.Common;assembly=Views.Common"
         mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -45,12 +44,17 @@
             </s:SciChartSurface.YAxis>
 
         </s:SciChartSurface>
-        <StackPanel Orientation="Horizontal" Grid.Row="1">
+        <StackPanel Orientation="Vertical" Grid.Row="1">
             <Button Command="{Binding ShowNextFrame}" IsEnabled="{Binding IsNextFrameLoaded}">
                 Display Next Frame
             </Button>
-            <TextBlock Text="Displaying frame: "/>
-            <TextBlock Text="{Binding CurrentFrame}"/>
+            <TextBlock>
+                <Run Text="Displaying frame: " />
+                <Run Text="{Binding CurrentFrame}" />
+            </TextBlock>
+            <Button Command="{Binding ClosePage}">
+                Close Graph Window
+            </Button>
         </StackPanel>
     </Grid>
 </UserControl>

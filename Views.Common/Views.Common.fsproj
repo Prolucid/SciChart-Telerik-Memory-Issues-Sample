@@ -5,14 +5,6 @@
 	<UseWPF>true</UseWPF>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Include="Elements.fs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Telerik.UI.for.Wpf.60" Version="2024.1.408" />
-  </ItemGroup>
-
 	<PropertyGroup>
 		<GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
 		<GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
