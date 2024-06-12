@@ -4,11 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:s="http://schemas.abtsoftware.co.uk/scichart"
-        xmlns:local="clr-namespace:Views"
         mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
-            <s:DefaultViewportManager x:Key="defaultViewportManager"/>
+            <s:DefaultViewportManager x:Key="DefaultViewportManager"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -16,9 +15,9 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+        
         <s:SciChartSurface Grid.Row="0" 
-                Name="heatmap" 
-                ViewportManager="{StaticResource defaultViewportManager}"
+                ViewportManager="{StaticResource DefaultViewportManager}"
                 EnableMultiThreadedRendering="True" 
                 RenderPriority="Normal"
                 s:VisualXcceleratorEngine.IsEnabled="True"
@@ -29,10 +28,8 @@
 
             <s:SciChartSurface.RenderableSeries>
                 <s:FastUniformHeatmapRenderableSeries
-                    DataSeries="{Binding GraphData}"
-                    Opacity="1.0" >
-
-                </s:FastUniformHeatmapRenderableSeries>
+                    Name="Heatmap"
+                    Opacity="1.0" />
             </s:SciChartSurface.RenderableSeries>
 
             <s:SciChartSurface.XAxis>
@@ -42,19 +39,18 @@
             <s:SciChartSurface.YAxis>
                 <s:NumericAxis x:Name="rotaryAxis" GrowBy="0.1,0.1" AutoRange="Always" AxisTitle="Rotary (deg)" FlipCoordinates="False"/>
             </s:SciChartSurface.YAxis>
-
         </s:SciChartSurface>
+        
         <StackPanel Orientation="Vertical" Grid.Row="1">
-            <Button Command="{Binding ShowNextFrame}" IsEnabled="{Binding IsNextFrameLoaded}">
+            <Button Click="AdvanceFrame_Click">
                 Display Next Frame
             </Button>
             <TextBlock>
-                <Run Text="Displaying frame: " />
-                <Run Text="{Binding CurrentFrame}" />
+                <Run Name="FrameRun" />
             </TextBlock>
-            <Button Command="{Binding ClosePage}">
-                Close Graph Window
-            </Button>
+            <!-- <Button Click="CloseWindow_Click"> -->
+            <!--     Close Graph Window -->
+            <!-- </Button> -->
         </StackPanel>
     </Grid>
 </UserControl>

@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
@@ -11,5 +12,5 @@
     <PackageReference Include="SciChart" Version="8.5.0.28148" />
     <PackageReference Include="SciChart3D" Version="8.5.0.28148" />
   </ItemGroup>
-
+  
 </Project>

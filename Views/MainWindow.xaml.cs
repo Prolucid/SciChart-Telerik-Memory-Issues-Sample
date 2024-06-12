@@ -1,17 +1,7 @@
 ﻿using SciChart.Charting.Visuals;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Views
 {
@@ -20,11 +10,26 @@ namespace Views
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly ChartTabViewModel _chartTabVm;
+        
         public MainWindow()
         {
             // You may add a scichart runtime license key here
-            // SciChartSurface.SetRuntimeLicenseKey("");
+            SciChartSurface.SetRuntimeLicenseKey("");
             InitializeComponent();
+            _chartTabVm = new ChartTabViewModel();
+            MainTabControl.ItemsSource = _chartTabVm.Tabs;
+        }
+        
+        private void AddGraphTab_Click(object sender, RoutedEventArgs e)
+        {
+            _chartTabVm.AddTab();
+        }
+
+        private void X_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            _chartTabVm.Tabs[MainTabControl.SelectedIndex].CleanUp();
+            _chartTabVm.Tabs.RemoveAt(MainTabControl.SelectedIndex);
         }
     }
 }

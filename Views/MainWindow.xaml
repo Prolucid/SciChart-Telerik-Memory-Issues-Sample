@@ -7,29 +7,29 @@
         xmlns:local="clr-namespace:Views"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Window.Resources>
-        <ResourceDictionary>
-            <DataTemplate x:Key="GraphUserControl">
-                <local:ChartView/>
-            </DataTemplate>
-        </ResourceDictionary>
-    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TabControl ItemsSource="{Binding DockedModels}"
-                    ContentTemplate="{StaticResource GraphUserControl}">
+        <TabControl Name="MainTabControl">
             <TabControl.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="Window"/>
+                    <StackPanel Orientation="Horizontal" Height="21" Width="100">
+                        <TextBlock Width="80" Text="Chart Tab"/>
+                        <TextBlock Width="20" Text="❌" MouseUp="X_MouseUp"></TextBlock>
+                    </StackPanel>
                 </DataTemplate>
             </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <UserControl Content="{Binding}"/>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
         </TabControl>
         <StackPanel Orientation="Horizontal" Grid.Row="1">
-            <Button Command="{Binding AddDockedModel}">
-                Add Graph Window
+            <Button Click="AddGraphTab_Click">
+                Add Graph Tab
             </Button>
         </StackPanel>
     </Grid>
