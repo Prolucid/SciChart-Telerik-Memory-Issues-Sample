@@ -33,11 +33,11 @@
             </s:SciChartSurface.RenderableSeries>
 
             <s:SciChartSurface.XAxis>
-                <s:NumericAxis x:Name="timeAxis" GrowBy="0.1,0.1" AutoRange="Always" AxisTitle="Time (μs)"/>
+                <s:NumericAxis x:Name="timeAxis" GrowBy="0.1,0.1" AutoRange="Once" AxisTitle="Time (μs)"/>
             </s:SciChartSurface.XAxis>
 
             <s:SciChartSurface.YAxis>
-                <s:NumericAxis x:Name="rotaryAxis" GrowBy="0.1,0.1" AutoRange="Always" AxisTitle="Rotary (deg)" FlipCoordinates="False"/>
+                <s:NumericAxis x:Name="rotaryAxis" GrowBy="0.1,0.1" AutoRange="Once" AxisTitle="Rotary (deg)" FlipCoordinates="False"/>
             </s:SciChartSurface.YAxis>
         </s:SciChartSurface>
         
@@ -48,9 +48,6 @@
             <TextBlock>
                 <Run Name="FrameRun" />
             </TextBlock>
-            <!-- <Button Click="CloseWindow_Click"> -->
-            <!--     Close Graph Window -->
-            <!-- </Button> -->
         </StackPanel>
     </Grid>
 </UserControl>

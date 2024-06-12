@@ -30,6 +30,7 @@ namespace Views
         {
             _chartTabVm.Tabs[MainTabControl.SelectedIndex].CleanUp();
             _chartTabVm.Tabs.RemoveAt(MainTabControl.SelectedIndex);
+            GC.Collect();
         }
     }
 }

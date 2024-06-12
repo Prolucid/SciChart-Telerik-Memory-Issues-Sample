@@ -14,16 +14,26 @@ namespace Views
 
         private static UniformHeatmapDataSeries<double, double, short> GenerateRandomData()
         {
+            var xDimension = 10000;
+            var yDimension = 10000;
+            
             var timestamp = DateTime.Now.ToString("HH:mm:ss.fff");
             Console.WriteLine($"{timestamp} Generating random data...");
             var randomGenerator = new Random();
-            var data = new short[10000, 10000];
+            var zValues = new short[xDimension];
             
-            for (var i = 0; i < 10000; i++)
+            for (var i = 0; i < xDimension; i++)
             {
-                for (var j = 0; j < 10000; j++)
+                zValues[i] = (short)randomGenerator.Next(0, 101);
+            }
+            
+            var data = new short[xDimension, yDimension];
+            
+            for (var x = 0; x < xDimension; x++)
+            {
+                for (var y = 0; y < yDimension; y++)
                 {
-                    data[i, j] = (short)randomGenerator.Next(0, 101);
+                    data[x, y] = zValues[x];
                 }
             }
             
@@ -58,17 +68,6 @@ namespace Views
             // _graphData[oldIndex].Clear();
         }
         
-        private void CloseWindow_Click(object sender, RoutedEventArgs e)
-        {
-            foreach (var g in _graphData)
-            {
-                g.Clear();
-                g.ParentSurface?.Dispose();
-            }
-
-            Array.Clear(_graphData);
-        }
-
         public void CleanUp()
         {
             foreach (var g in _graphData)
