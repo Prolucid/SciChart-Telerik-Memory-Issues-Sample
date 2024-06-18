@@ -51,6 +51,7 @@ let init(id: Guid): Model*Cmd<Msg> =
 let update (msg: Msg) (model: Model) : Model*Cmd<Msg> =
     match msg with
     | Error e -> printfn "!! %O" e; model, Cmd.none
+    
     // Display the next frame in the graph data
     | ShowNextFrame ->
         model.GraphData[model.DisplayIndex].Clear()
@@ -65,12 +66,13 @@ let update (msg: Msg) (model: Model) : Model*Cmd<Msg> =
         Cmd.OfFunc.attempt garbageCollect () Error
 
     | Close ->
-        model.GraphData 
-        |> Array.iter (fun g -> 
-                        g.Clear()
-                        if (not(isNull(g.ParentSurface))) then
-                            g.ParentSurface.Dispose())
-        { model with GraphData = [||]}, RemoveDockedModel |> Cmd.ofMsg
+        // model.GraphData 
+        // |> Array.iter (fun g -> 
+        //                 g.Clear()
+        //                 if (not(isNull(g.ParentSurface))) then
+        //                     g.ParentSurface.Dispose())
+        // { model with GraphData = [||]}, RemoveDockedModel |> Cmd.ofMsg
+        model, RemoveDockedModel |> Cmd.ofMsg
 
     | RemoveDockedModel ->
         model, Cmd.none
