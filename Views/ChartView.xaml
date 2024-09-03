@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:s="http://schemas.abtsoftware.co.uk/scichart"
+        xmlns:local="clr-namespace:Views"
         mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -15,7 +16,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        
+
         <s:SciChartSurface Grid.Row="0" 
                 ViewportManager="{StaticResource DefaultViewportManager}"
                 EnableMultiThreadedRendering="True" 
@@ -25,20 +26,27 @@
                 s:VisualXcceleratorEngine.DowngradeWithoutException="False"
                 s:VisualXcceleratorEngine.EnableImpossibleMode="True"
                 s:SciChartGroup.VerticalChartGroup="chartSync">
-
             <s:SciChartSurface.RenderableSeries>
                 <s:FastUniformHeatmapRenderableSeries
-                    Name="Heatmap"
-                    Opacity="1.0" />
+                    x:Name="Heatmap"
+                    Opacity="1.0"/>
             </s:SciChartSurface.RenderableSeries>
 
             <s:SciChartSurface.XAxis>
-                <s:NumericAxis x:Name="timeAxis" GrowBy="0.1,0.1" AutoRange="Once" AxisTitle="Time (μs)"/>
+                <local:WraparoundNumericAxis x:Name="timeAxis" GrowBy="0.1,0.1" AxisTitle="Time (μs)"/>
             </s:SciChartSurface.XAxis>
 
             <s:SciChartSurface.YAxis>
                 <s:NumericAxis x:Name="rotaryAxis" GrowBy="0.1,0.1" AutoRange="Once" AxisTitle="Rotary (deg)" FlipCoordinates="False"/>
             </s:SciChartSurface.YAxis>
+
+            <s:SciChartSurface.ChartModifier>
+                <s:ModifierGroup>
+                    <s:ZoomExtentsModifier ExecuteOn="MouseDoubleClick"/>
+                    <s:RolloverModifier ShowTooltipOn="Always" UseInterpolation="False"/>
+                    <s:ZoomPanModifier/>
+                </s:ModifierGroup>
+            </s:SciChartSurface.ChartModifier>
         </s:SciChartSurface>
         
         <StackPanel Orientation="Vertical" Grid.Row="1">
