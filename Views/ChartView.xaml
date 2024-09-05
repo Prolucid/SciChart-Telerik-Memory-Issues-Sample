@@ -27,7 +27,7 @@
                 s:VisualXcceleratorEngine.EnableImpossibleMode="True"
                 s:SciChartGroup.VerticalChartGroup="chartSync">
             <s:SciChartSurface.RenderableSeries>
-                <s:FastUniformHeatmapRenderableSeries
+                <local:CustomHeatmapRenderableSeries
                     x:Name="Heatmap"
                     Opacity="1.0"/>
             </s:SciChartSurface.RenderableSeries>
@@ -44,7 +44,8 @@
                 <s:ModifierGroup>
                     <s:ZoomExtentsModifier ExecuteOn="MouseDoubleClick"/>
                     <s:RolloverModifier ShowTooltipOn="Always" UseInterpolation="False"/>
-                    <s:ZoomPanModifier/>
+                    <s:ZoomPanModifier ExecuteOn="MouseRightButton"/>
+                    <s:RubberBandXyZoomModifier/>
                 </s:ModifierGroup>
             </s:SciChartSurface.ChartModifier>
         </s:SciChartSurface>
