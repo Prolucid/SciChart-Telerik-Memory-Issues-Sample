@@ -15,18 +15,6 @@ using SciChart.Core.Extensions;
 
 namespace Views
 {
-    public class CustomPaletteProvider : IHeatmapPaletteProvider
-    {
-        public void OnBeginSeriesDraw(IRenderableSeries rSeries)
-        {
-        }
-
-        public Color? OverrideCellColor(IRenderableSeries rSeries, int xIndex, int yIndex, IComparable zValue, Color cellColor, IPointMetadata metadata)
-        {
-            Color c = Color.FromRgb(255, 0, 0);
-            return c;
-        }
-    }
     public class CustomHeatmapDS : UniformHeatmapDataSeries<double, double, double>, IHeatmapDataSeries
     {
         double mod(double x, double m)
@@ -82,12 +70,13 @@ namespace Views
 
     public class WraparoundHeatmapDrawingProvider : UniformHeatmapSeriesDrawingProvider
     {
+        // HeatmapDrawingProvider is doing a check to make sure x-min < x-max which is why the heatmap only renders under certain visible range conditions
         public WraparoundHeatmapDrawingProvider(FastUniformHeatmapRenderableSeries renderableSeries) : base(renderableSeries)
         { 
         }
         private void GetColorDataNoPeakDetector(int xStartInd, int width, int yStartind, int height, int yInc, double opacity, HeatmapColorPalette colorMap, IHeatmapPaletteProvider pp, CustomHeatmapDS dataseries)
         {
-            // todo: parallelize
+            // todo: parallelize, which just distributes y slices to be handled in parallel
             bool isMultithreaded = this.RenderableSeries.GetParentSurface().EnableMultiThreadedRendering;
             if (isMultithreaded)
             {
@@ -105,26 +94,12 @@ namespace Views
             }
         }
 
-        private int DecimatedTextureSize(int dataCells, double heatmapRectSize, out int increment)
-        {
-            increment = 1;
-            int decimatedSize = dataCells;
-            if (dataCells > heatmapRectSize)
-            {
-                increment = (int) (dataCells / heatmapRectSize);
-                decimatedSize /= increment;
-            }
-            return decimatedSize;
-        }
-
         protected override void GetColorDataForTexture(int xStartInd, int textureWidth, int xInc, int yStartInd, int textureHeight, int yInc)
         {
 
-            // Really this is just responsible for setting _colorData. The mapping from raw data -> color happens here
-
-            // basically just call either the peak detector or non-peak detector based on this.PeakDetector. (Just call base if PeakDetector is on)
-            // implement non-peak detector here aswell, essentially just distributes yslices to be handled in parallel if multithreading is enabled
-
+            // This method is really just responsible for setting _colorData. The mapping from raw data -> color happens here
+            
+            // todo: look into handling with a peak detector
             this.GetColorDataNoPeakDetector(
                 xStartInd, 
                 textureWidth, 
@@ -135,30 +110,14 @@ namespace Views
                 this.RenderableSeries.ColorMap, 
                 this.RenderableSeries.PaletteProvider as IHeatmapPaletteProvider, 
                 this.RenderableSeries.DataSeries as CustomHeatmapDS);
-            //base.GetColorDataForTexture(xStartInd, textureWidth, xInc, yStartInd, textureHeight, yInc);
         }
 
         protected override void DrawHeatmapAsTexture(IRenderContext2D renderContext, Rect heatmapRect)
-        {
-            
-            //Size viewportSize = renderContext.ViewportSize;
-            
-            //int width = (int) renderContext.ViewportSize.Width.RoundOff(MidpointRounding.AwayFromZero);
-            //double ytop = heatmapRect.Top < 0.0 ? 0.0 : heatmapRect.Top;
-            //double ybot = heatmapRect.Bottom > viewportSize.Height ? viewportSize.Height : heatmapRect.Bottom;
-            //int height = (int) (ybot - ytop).RoundOff(MidpointRounding.AwayFromZero);
-            //this.DrawHeatmapAsTexture(renderContext, overwriteRect, width, height, true);
-
-            // need to overwrite _horStartInd and _horCellCount
-            // _horStartInd should be the visibleRange.Min % xRange
-            // _horCellCount should be index range covered by the visible range
-
-            
+        {            
             IComparable visibleMin = this.RenderableSeries.XAxis.VisibleRange.Min;
             CustomHeatmapDS ds = (CustomHeatmapDS)this.RenderableSeries.DataSeries;
             this._horStartInd = ds.getWrappedXIndex(visibleMin);
             this._horCellCount = ds.GetCellCountInRange(this.RenderableSeries.XAxis.VisibleRange);
-            //double horStartVal = ds.GetXValue(this._horStartInd);
             
             // Calculations for sizing/positioning the X-Axis of the texture rect
             DoubleRange dataPointRange = ds.GetDataPointLocationsInRange(this.RenderableSeries.XAxis.VisibleRange);
@@ -168,63 +127,12 @@ namespace Views
             // Texture rect width is just the diff between screen coordinates for Min and Max visible x values
             double heatmapWidth = maxCoord - minCoord;
 
-            
             // We need to overwrite the starting position and size of the heatmapRect because scichart doesn't like non-sequential ranges
             Rect overwriteRect = new Rect(minCoord, heatmapRect.Top, heatmapWidth, heatmapRect.Height);
 
-            //int xInc, yInc;
-            //int textureWidth = DecimatedTextureSize(this._horCellCount, overwriteRect.Width, out xInc);
-            //int textureHeight = DecimatedTextureSize(this._vertCellCount, overwriteRect.Height, out yInc);
-            //this._horInc *= xInc;
-            //this._vertInc *= yInc;
-
-            //base.DrawHeatmapAsTexture(renderContext, overwriteRect, textureWidth, textureHeight, true);
             base.DrawHeatmapAsTexture(renderContext, overwriteRect);
 
         }
-
-        protected override void DrawHeatmapAsTexture(IRenderContext2D renderContext, Rect destinationRect, int textureWidth, int textureHeight, bool isUniform)
-        {
-            base.DrawHeatmapAsTexture(renderContext, destinationRect, textureWidth, textureHeight, isUniform);
-        }
-
-        //public override void OnDraw(IRenderContext2D renderContext, IRenderPassData renderPassData)
-        //{
-        //    CustomHeatmapDS dataSeries = (CustomHeatmapDS)this.RenderableSeries.DataSeries;
-
-        //    IRange visibleRangeY = this.RenderableSeries.YAxis.VisibleRange;
-        //    IndexRange yIndicesRange = dataSeries.GetYIndicesRange(visibleRangeY);
-        //    double ydataValue1 = (double)dataSeries.GetYValue(yIndicesRange.Min);
-        //    double ydataValue2 = (double)dataSeries.GetYValue(yIndicesRange.Max);
-        //    double ycoord1 = renderPassData.YCoordinateCalculator.GetCoordinate(ydataValue1);
-        //    double ycoord2 = renderPassData.YCoordinateCalculator.GetCoordinate(ydataValue2);
-        //    double height = ycoord2 - ycoord1;
-
-
-        //    double xdataValue1 = 0;
-        //    double xdataValue2 = 9999;
-        //    double xcoord1 = renderPassData.XCoordinateCalculator.GetCoordinate(xdataValue1);
-        //    double xcoord2 = renderPassData.XCoordinateCalculator.GetCoordinate(xdataValue2);
-        //    double width = xcoord2 - xcoord1;
-
-        //    Rect heatmapRect = new Rect(ycoord1, xcoord1, Math.Abs(width), Math.Abs(height));
-
-        //    this._horStartInd = yIndicesRange.Min;
-        //    this._vertStartInd = 0;
-        //    this._horInc = -1;
-        //    this._vertInc = 1;
-        //    this._horCellCount = yIndicesRange.Diff;
-        //    this._vertCellCount = 9999;
-        //    this._zValues = dataSeries.getZValues();
-
-        //    this.DrawHeatmapAsRects(renderContext, heatmapRect);
-        //    //else {
-        //    //    this.DrawHeatmapAsTexture(renderContext, heatmapRect);    
-        //    //}
-        //    this.DrawHeatmapLabels(renderContext, heatmapRect);
-        //    //base.OnDraw(renderContext, renderPassData);
-        //}
-
     }
 
     /// <summary>
@@ -264,13 +172,10 @@ namespace Views
 
         public double VisibleMax => fallbackCalculator.VisibleMax;
 
-        public IRange ActiveVisibleRange;
-
         private ICoordinateCalculator<double> fallbackCalculator;
 
-        public WraparoundCoordinateCalculator(AxisParams axisParams, IRange activeVisibleRange)
+        public WraparoundCoordinateCalculator(AxisParams axisParams)
         {
-            ActiveVisibleRange = activeVisibleRange;
             CoordinateCalculatorFactory factory = new CoordinateCalculatorFactory();
             fallbackCalculator = factory.New(axisParams);
         }
@@ -281,11 +186,6 @@ namespace Views
 
         public double GetCoordinate(double dataValue)
         {
-            // HeatmapDrawingProvider is doing a check to make sure x-min < x-max which is why the heatmap only renders under certain visible range conditions
-            // probably need a custom DrawingProvider
-            //double temp = mod(dataValue, 10000);
-            //double temp2 = fallbackCalculator.GetCoordinate(temp);
-            //return temp2;
             return fallbackCalculator.GetCoordinate(dataValue);
         }
 
@@ -320,25 +220,15 @@ namespace Views
         }
     }
 
-    // Custom RenderableSeries that inherits from FastUniformHeatmapRenderableSeries and overrides InternalDraw
     public class CustomHeatmapRenderableSeries : FastUniformHeatmapRenderableSeries, IRenderableSeriesBase
     {
         public CustomHeatmapRenderableSeries()
             : base()
         {
-            this.DrawingProviders = (IEnumerable<ISeriesDrawingProvider>)new WraparoundHeatmapDrawingProvider[1]
+            DrawingProviders = (IEnumerable<ISeriesDrawingProvider>)new WraparoundHeatmapDrawingProvider[1]
               {
                 new WraparoundHeatmapDrawingProvider(this)
-                {
-                  PeakDetector = (IHeatmapPeakDetector) new UniformHeatmapYPeakDetector()
-                }
               };
-            Opacity = 1;
-        }
-
-        protected override void InternalDraw(IRenderContext2D renderContext, IRenderPassData renderPassData)
-        {
-            base.InternalDraw(renderContext, renderPassData);
         }
     }
 
@@ -359,16 +249,6 @@ namespace Views
         {
             return (x % m + m) % m;
         }
-
-        //public override IComparable GetDataValue(double pixelCoordinate)
-        //{
-        //    IComparable baseDataValue = base.GetDataValue(pixelCoordinate);
-        //    if (baseDataValue is double doubleValue)
-        //    {
-        //        return mod(doubleValue, actualRange.AsDoubleRange().Max);
-        //    }
-        //    else return baseDataValue;
-        //}
         
         // The VisibleRange being requested by the drawing provider needs to be overwritten to provide the actual visible range
         public override double GetCoordinate(IComparable value)
@@ -382,9 +262,7 @@ namespace Views
 
         public override ICoordinateCalculator<double> GetCurrentCoordinateCalculator()
         {
-            // Figure out what drawing providers are doing during OnInvalidateParentSurface() method of RenderableSeries
-
-            ICoordinateCalculator<double> coordCalc = new WraparoundCoordinateCalculator(GetAxisParams(), this.VisibleRange);
+            ICoordinateCalculator<double> coordCalc = new WraparoundCoordinateCalculator(GetAxisParams());
             // interactivity helper has its own ref to coordinate calculator
             this._currentInteractivityHelper = AxisInteractivityHelperFactory.New(this.GetAxisParams(), coordCalc);
             return coordCalc;
@@ -400,8 +278,7 @@ namespace Views
         public override IComparable GetDataValue(double pixelCoordinate)
         {
             ICoordinateCalculator<double> coordinateCalculator = GetCurrentCoordinateCalculator();
-            IComparable temp = coordinateCalculator.GetDataValue(pixelCoordinate);
-            return temp;
+            return coordinateCalculator.GetDataValue(pixelCoordinate);
         }
     }
 
