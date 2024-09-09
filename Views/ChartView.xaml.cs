@@ -56,14 +56,24 @@ namespace Views
             return temp;
         }
 
-        public int GetCellCountInRange(IComparable absoluteXRange)
+        public int GetCellCountInRange(IRange absoluteXRange) // needs to take a range not a diff
         {
-            double doubleAbsolute = absoluteXRange.ToDouble();
-            return (int)(doubleAbsolute / _xStep);
+            DoubleRange doubleAbsoluteRange = absoluteXRange.AsDoubleRange();
+            // Go to first location with a point
+            int minRangeIndex = (int)Math.Floor((doubleAbsoluteRange.Min - _xStart) / _xStep);
+            int maxRangeIndex = (int)Math.Ceiling((doubleAbsoluteRange.Max - _xStart) / _xStep);
+            int cellCount = maxRangeIndex - minRangeIndex;
+
+            // start counting by the step value until we reach the max
+            //while (((minRangeIndex + count) * _xStep) < doubleAbsoluteRange.Max) // sloppy while loop for now, there is a formula to solve this
+            //{ 
+            //    count++;
+            //}
+            return cellCount;
         }
 
         // function to get minimum instance of a mod value in given range
-        public double GetMinIndexInstanceValue(IRange searchRange, int modXIndex)
+        public (double, double) GetMinIndexInstanceValue(IRange searchRange, int modXIndex)
         {
             DoubleRange doubleSearchRange = searchRange.AsDoubleRange();
             // floor/ceil search range to next values that align with xIndices
@@ -71,7 +81,7 @@ namespace Views
             int maxSearchRangeIndex = (int)Math.Ceiling((doubleSearchRange.Max - _xStart) / _xStep);
             // formula to find the smallest x such that (x mod _xSize = modXIndex)
             int minIndex = minSearchRangeIndex + (int)mod(modXIndex - minSearchRangeIndex, _xSize);
-            return GetXValue(minIndex);
+            return (GetXValue(minIndex), GetXValue(maxSearchRangeIndex));
         }
 
     }
@@ -154,14 +164,19 @@ namespace Views
             IComparable visibleDiff = this.RenderableSeries.XAxis.VisibleRange.Diff;
             CustomHeatmapDS ds = (CustomHeatmapDS)this.RenderableSeries.DataSeries;
             this._horStartInd = ds.getWrappedXIndex(visibleMin);
-            this._horCellCount = ds.GetCellCountInRange(visibleDiff);
+            this._horCellCount = ds.GetCellCountInRange(this.RenderableSeries.XAxis.VisibleRange);
             //double horStartVal = ds.GetXValue(this._horStartInd);
 
-            double minValue = ds.GetMinIndexInstanceValue(this.RenderableSeries.XAxis.VisibleRange, this._horStartInd);
-            double horCoord = this.RenderableSeries.XAxis.GetCurrentCoordinateCalculator().GetCoordinate(minValue);
+            (double minValue, double maxValue) = ds.GetMinIndexInstanceValue(this.RenderableSeries.XAxis.VisibleRange, this._horStartInd); // Does this need the mod part?
+            double minCoord = this.RenderableSeries.XAxis.GetCurrentCoordinateCalculator().GetCoordinate(minValue);
+            double maxCoord = this.RenderableSeries.XAxis.GetCurrentCoordinateCalculator().GetCoordinate(maxValue);
+
+            double heatmapWidth = maxCoord - minCoord;
+
+            // width is just the diff in coordinates between minValue and maxValue
 
             // We need to overwrite the starting position and size of the heatmapRect because scichart doesn't like non-sequential ranges
-            Rect overwriteRect = new Rect(horCoord, heatmapRect.Top, renderContext.ViewportSize.Width, heatmapRect.Height);
+            Rect overwriteRect = new Rect(minCoord, heatmapRect.Top, heatmapWidth, heatmapRect.Height);
 
             //int xInc, yInc;
             //int textureWidth = DecimatedTextureSize(this._horCellCount, overwriteRect.Width, out xInc);
