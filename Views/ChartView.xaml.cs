@@ -6,6 +6,7 @@ using SciChart.Charting.Visuals.PaletteProviders;
 using SciChart.Charting.Visuals.RenderableSeries.DrawingProviders;
 using SciChart.Charting.Visuals.Axes;
 using SciChart.Charting.Visuals.Axes.AxisInteractivityHelpers;
+using SciChart.Charting.Visuals;
 using SciChart.Drawing.Common;
 using SciChart.Charting.Numerics.CoordinateCalculators;
 using SciChart.Data.Model;
@@ -66,6 +67,10 @@ namespace Views
             return new DoubleRange(GetXValue(indexRange.Min), GetXValue(indexRange.Max)); // translate indices to data point locations
         }
 
+        public double GetXMax()
+        {
+            return _xStart + (_xStep * _xSize);
+        }
     }
 
     public class WraparoundHeatmapDrawingProvider : UniformHeatmapSeriesDrawingProvider
@@ -122,8 +127,8 @@ namespace Views
             // Calculations for sizing/positioning the X-Axis of the texture rect
             DoubleRange dataPointRange = ds.GetDataPointLocationsInRange(this.RenderableSeries.XAxis.VisibleRange);
             // minCoord and maxCoord can overflow outside the VisibleRange
-            double minCoord = this.RenderableSeries.XAxis.GetCurrentCoordinateCalculator().GetCoordinate(dataPointRange.Min);
-            double maxCoord = this.RenderableSeries.XAxis.GetCurrentCoordinateCalculator().GetCoordinate(dataPointRange.Max);
+            double minCoord = this.RenderableSeries.XAxis.GetCoordinate(dataPointRange.Min);
+            double maxCoord = this.RenderableSeries.XAxis.GetCoordinate(dataPointRange.Max);
             // Texture rect width is just the diff between screen coordinates for Min and Max visible x values
             double heatmapWidth = maxCoord - minCoord;
 
@@ -173,11 +178,13 @@ namespace Views
         public double VisibleMax => fallbackCalculator.VisibleMax;
 
         private ICoordinateCalculator<double> fallbackCalculator;
+        private double WrapValue;
 
-        public WraparoundCoordinateCalculator(AxisParams axisParams)
+        public WraparoundCoordinateCalculator(AxisParams axisParams, double wrapValue)
         {
             CoordinateCalculatorFactory factory = new CoordinateCalculatorFactory();
             fallbackCalculator = factory.New(axisParams);
+            WrapValue = wrapValue;
         }
         public double GetCoordinate(DateTime dataValue)
         {
@@ -201,7 +208,7 @@ namespace Views
 
         public double GetDataValue(double pixelCoordinate)
         {
-            return mod(fallbackCalculator.GetDataValue(pixelCoordinate), 10);
+            return mod(fallbackCalculator.GetDataValue(pixelCoordinate), WrapValue);
         }
 
         public CoordinateCalculator ToNativeCalculator(eAxisType axisType, Type dataType)
@@ -238,8 +245,6 @@ namespace Views
     /// </summary>
     public class WraparoundNumericAxis : NumericAxis
     {
-        private IRange actualRange = new DoubleRange(0, 10);
-
         public WraparoundNumericAxis()
             : base()
         {
@@ -249,30 +254,32 @@ namespace Views
         {
             return (x % m + m) % m;
         }
-        
-        // The VisibleRange being requested by the drawing provider needs to be overwritten to provide the actual visible range
-        public override double GetCoordinate(IComparable value)
-        {
-            if (value is double doubleValue)
-            {
-                return base.GetCoordinate(mod(doubleValue, actualRange.AsDoubleRange().Max));
-            }
-            return base.GetCoordinate(value);
-        }
 
         public override ICoordinateCalculator<double> GetCurrentCoordinateCalculator()
         {
-            ICoordinateCalculator<double> coordCalc = new WraparoundCoordinateCalculator(GetAxisParams());
-            // interactivity helper has its own ref to coordinate calculator
-            this._currentInteractivityHelper = AxisInteractivityHelperFactory.New(this.GetAxisParams(), coordCalc);
-            return coordCalc;
+            if (this.ParentSurface is SciChartSurface parentSurface)
+            {
+                if (parentSurface.RenderableSeries[0].DataSeries is CustomHeatmapDS heatmapDS)
+                {
+                    ICoordinateCalculator<double> coordCalc = new WraparoundCoordinateCalculator(GetAxisParams(), heatmapDS.GetXMax());
+                    // interactivity helper has its own ref to coordinate calculator
+                    this._currentInteractivityHelper = AxisInteractivityHelperFactory.New(this.GetAxisParams(), coordCalc);
+                    return coordCalc;
+                }
+            }
+            return base.GetCurrentCoordinateCalculator();
         }
 
         protected override IComparable ConvertTickToDataValue(IComparable value)
         {
-            if (value is double doubleValue)
-                return mod(doubleValue, actualRange.AsDoubleRange().Max);
-            else return value;
+            if (value is double doubleValue && this.ParentSurface is SciChartSurface parentSurface)
+            {
+                if (parentSurface.RenderableSeries[0].DataSeries is CustomHeatmapDS heatmapDS)
+                {
+                    return mod(doubleValue, heatmapDS.GetXMax());
+                }
+            }
+            return value;
         }
 
         public override IComparable GetDataValue(double pixelCoordinate)
