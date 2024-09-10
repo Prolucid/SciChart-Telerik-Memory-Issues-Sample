@@ -37,7 +37,6 @@ namespace Views
         public int getWrappedXIndex(IComparable absoluteXValue)
         {
             // not really sure if its a good idea to be doing modulo algebra on non-index values
-            DoubleRange xRange = GetXRange().AsDoubleRange();
             double doubleAbsolute = absoluteXValue.ToDouble();
             double xMax = _xStart + _xStep * _xSize;
             double wrappedAbsolute = mod(doubleAbsolute, xMax) + _xStart;
@@ -81,20 +80,31 @@ namespace Views
         }
         private void GetColorDataNoPeakDetector(int xStartInd, int width, int yStartind, int height, int yInc, double opacity, HeatmapColorPalette colorMap, IHeatmapPaletteProvider pp, CustomHeatmapDS dataseries)
         {
-            // todo: parallelize, which just distributes y slices to be handled in parallel
+            void handleSlice(int y)
+            {
+                int yInd = yStartind + (y * yInc);
+
+                for (int x = 0; x < width; x++)
+                {
+                    int xInd = dataseries.getWrappedXIndex(xStartInd + x);
+                    int colorIndex = (y * width) + x;
+                    this._colorData[colorIndex] = this.GetColor(dataseries, yInd, xInd, colorMap, pp, opacity);
+                }
+            }
+
             bool isMultithreaded = this.RenderableSeries.GetParentSurface().EnableMultiThreadedRendering;
             if (isMultithreaded)
             {
+                Parallel.For(0, height, (y) =>
+                {
+                    Console.WriteLine(y);
+                    handleSlice(y);
+                });
+            } else
+            {
                 for (int y = 0; y < height; y++)
                 {
-                    int yInd = yStartind + (y * yInc);
-
-                    for (int x = 0; x < width; x++)
-                    {
-                        int xInd = dataseries.getWrappedXIndex(xStartInd + x);
-                        int colorIndex = (y * width) + x;
-                        this._colorData[colorIndex] = this.GetColor(dataseries, yInd, xInd, colorMap, pp, opacity);
-                    }
+                    handleSlice(y);
                 }
             }
         }
