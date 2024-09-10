@@ -97,7 +97,6 @@ namespace Views
             {
                 Parallel.For(0, height, (y) =>
                 {
-                    Console.WriteLine(y);
                     handleSlice(y);
                 });
             } else
