@@ -23,6 +23,11 @@ namespace Views
             return (x % m + m) % m;
         }
 
+        int modInt(int x, int m)
+        {
+            return (x % m + m) % m;
+        }
+
         private double _xStep;
         private double _xStart;
         private int _xSize;
@@ -34,7 +39,7 @@ namespace Views
             _xSize = zValues.GetLength(1);
         }
 
-        public int getWrappedXIndex(IComparable absoluteXValue)
+        public int getWrappedXIndexFromValue(IComparable absoluteXValue)
         {
             // not really sure if its a good idea to be doing modulo algebra on non-index values
             double doubleAbsolute = absoluteXValue.ToDouble();
@@ -42,6 +47,11 @@ namespace Views
             double wrappedAbsolute = mod(doubleAbsolute, xMax) + _xStart;
             int temp = GetXIndex(wrappedAbsolute);
             return temp;
+        }
+
+        public int getWrappedXIndexFromIndex(int rawXIndex)
+        {
+            return modInt(rawXIndex, _xSize);
         }
 
         public int GetCellCountInRange(IRange absoluteXRange)
@@ -78,7 +88,7 @@ namespace Views
         public WraparoundHeatmapDrawingProvider(FastUniformHeatmapRenderableSeries renderableSeries) : base(renderableSeries)
         { 
         }
-        private void GetColorDataNoPeakDetector(int xStartInd, int width, int yStartind, int height, int yInc, double opacity, HeatmapColorPalette colorMap, IHeatmapPaletteProvider pp, CustomHeatmapDS dataseries)
+        private void GetColorDataNoPeakDetector(int xStartInd, int width, int yStartind, int height, int yInc, int xInc, double opacity, HeatmapColorPalette colorMap, IHeatmapPaletteProvider pp, CustomHeatmapDS dataseries)
         {
             void handleSlice(int y)
             {
@@ -86,7 +96,7 @@ namespace Views
 
                 for (int x = 0; x < width; x++)
                 {
-                    int xInd = dataseries.getWrappedXIndex(xStartInd + x);
+                    int xInd = dataseries.getWrappedXIndexFromIndex(xStartInd + (x * xInc));
                     int colorIndex = (y * width) + x;
                     this._colorData[colorIndex] = this.GetColor(dataseries, yInd, xInd, colorMap, pp, opacity);
                 }
@@ -120,6 +130,7 @@ namespace Views
                 yStartInd, 
                 textureHeight, 
                 yInc, 
+                xInc,
                 this.RenderableSeries.Opacity, 
                 this.RenderableSeries.ColorMap, 
                 this.RenderableSeries.PaletteProvider as IHeatmapPaletteProvider, 
@@ -130,7 +141,7 @@ namespace Views
         {            
             IComparable visibleMin = this.RenderableSeries.XAxis.VisibleRange.Min;
             CustomHeatmapDS ds = (CustomHeatmapDS)this.RenderableSeries.DataSeries;
-            this._horStartInd = ds.getWrappedXIndex(visibleMin);
+            this._horStartInd = ds.getWrappedXIndexFromValue(visibleMin);
             this._horCellCount = ds.GetCellCountInRange(this.RenderableSeries.XAxis.VisibleRange);
             
             // Calculations for sizing/positioning the X-Axis of the texture rect
@@ -310,7 +321,7 @@ namespace Views
         private static CustomHeatmapDS GenerateRandomData()
         {
             var xDimension = 5;
-            var yDimension = 10;
+            var yDimension = 360;
             
             var timestamp = DateTime.Now.ToString("HH:mm:ss.fff");
             Console.WriteLine($"{timestamp} Generating random data...");
